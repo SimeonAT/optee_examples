@@ -30,6 +30,7 @@ static void usage(int argc, char *argv[])
 	fprintf(stderr, "              PKCS1_PSS_MGF1_SHA256\n");
 	fprintf(stderr, "              PKCS1_PSS_MGF1_SHA384\n");
 	fprintf(stderr, "              PKCS1_PSS_MGF1_SHA512\n");
+  fprintf(stderr, "              ED25519\n");
 
 	exit(1);
 }
@@ -83,7 +84,10 @@ static void get_args(int argc, char *argv[], size_t *key_size,
 			*selected_alg = TA_ALG_PKCS1_PSS_MGF1_SHA384;
 		} else if (strcmp(algo, "PKCS1_PSS_MGF1_SHA512") == 0) {
 			*selected_alg = TA_ALG_PKCS1_PSS_MGF1_SHA512;
-		} else {
+		} else if (strcmp(algo, "ED25519") == 0) {
+      printf("Going to use ED25519. Not implemented yet.\n");
+      exit(0);
+    } else {
 			printf("%s algo is invalid\n\n", algo);
 			usage(argc, argv);
 		}

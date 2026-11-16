@@ -25,6 +25,8 @@
 #define TA_ALG_PKCS1_V1_5_SHA384	8
 #define TA_ALG_PKCS1_V1_5_SHA512	9
 
+#define TA_ALG_ED25519 10
+
 #define MAX_SIG_SIZE			512
 
 #endif
