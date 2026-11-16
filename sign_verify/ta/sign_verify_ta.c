@@ -112,6 +112,9 @@ static TEE_Result select_algo(uint32_t sig_alg, uint32_t *algo_num)
 	case TA_ALG_PKCS1_V1_5_SHA512:
 		*algo_num = TEE_ALG_RSASSA_PKCS1_V1_5_SHA512;
 		return TEE_SUCCESS;
+  case TA_ALG_ED25519:
+    *algo_num = TEE_ALG_ED25519;
+    return TEE_SUCCESS;
 	default:
 		return TEE_ERROR_BAD_PARAMETERS;
 	}
@@ -175,6 +178,13 @@ static TEE_Result sign_verify(uint32_t param_types,
 	res = select_algo(sig_alg, &algo_num);
 	if (res != TEE_SUCCESS)
 		return res;
+  
+  if (sig_alg == TA_ALG_ED25519) {
+    DMSG("Going to sign and verify using ED25519.\n");
+    DMSG("But not implemented yet.");
+    DMSG("Exiting program.");
+    return res;
+  }
 
 	hash_alg = get_hash_alg_from_sig_alg(algo_num);
 	if (hash_alg == 0)
