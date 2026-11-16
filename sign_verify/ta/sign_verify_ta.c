@@ -147,7 +147,6 @@ static TEE_Result sign_verify(uint32_t param_types,
 			      TEE_Param params[4],
 			      void *session_context)
 {
-
 	struct rsa_session *sess = (struct rsa_session *)session_context;
 
 	uint32_t exp_param_types = TEE_PARAM_TYPES(TEE_PARAM_TYPE_MEMREF_INPUT,
@@ -180,10 +179,7 @@ static TEE_Result sign_verify(uint32_t param_types,
 		return res;
   
   if (sig_alg == TA_ALG_ED25519) {
-    DMSG("Going to sign and verify using ED25519.\n");
-    DMSG("But not implemented yet.");
-    DMSG("Exiting program.");
-    return res;
+    DMSG("Using ED25519 for signing and verification.");
   }
 
 	hash_alg = get_hash_alg_from_sig_alg(algo_num);
