@@ -85,8 +85,9 @@ static void get_args(int argc, char *argv[], size_t *key_size,
 		} else if (strcmp(algo, "PKCS1_PSS_MGF1_SHA512") == 0) {
 			*selected_alg = TA_ALG_PKCS1_PSS_MGF1_SHA512;
 		} else if (strcmp(algo, "ED25519") == 0) {
-      printf("Going to use ED25519.\n");
+      printf("Using ED25519. Setting key size to 256 bytes. \n");
       *selected_alg = TA_ALG_ED25519;
+      *key_size = 256;
     } else {
 			printf("%s algo is invalid\n\n", algo);
 			usage(argc, argv);

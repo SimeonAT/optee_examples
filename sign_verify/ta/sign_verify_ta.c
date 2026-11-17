@@ -143,6 +143,13 @@ static uint32_t get_hash_alg_from_sig_alg(uint32_t sig_alg)
 	}
 }
 
+static TEE_Result sign_verify_ed25519(uint32_t param_types, TEE_Param params[4],
+                                      void *session_context)
+{
+  DMSG("Using ED25519 for signing and verification.");
+  return TEE_SUCCESS;
+}
+
 static TEE_Result sign_verify(uint32_t param_types,
 			      TEE_Param params[4],
 			      void *session_context)
@@ -179,12 +186,12 @@ static TEE_Result sign_verify(uint32_t param_types,
 		return res;
   
   if (sig_alg == TA_ALG_ED25519) {
-    DMSG("Using ED25519 for signing and verification.");
+    return sign_verify_ed25519(param_types, params, session_context);
   }
 
-	hash_alg = get_hash_alg_from_sig_alg(algo_num);
-	if (hash_alg == 0)
-		return TEE_ERROR_BAD_PARAMETERS;
+  hash_alg = get_hash_alg_from_sig_alg(algo_num);
+  if (hash_alg == 0)
+    return TEE_ERROR_BAD_PARAMETERS;
 
 	msg = params[0].memref.buffer;
 	msg_len = params[0].memref.size;
@@ -197,16 +204,16 @@ static TEE_Result sign_verify(uint32_t param_types,
 	res = generate_rsa_keys(sess, key_sz);
 	if (res != TEE_SUCCESS)
 		return res;
-
-	/* Compute SHA digest */
-	DMSG("Prepare SHA digest");
-	res = TEE_AllocateOperation(&hash_op, hash_alg, TEE_MODE_DIGEST, 0);
-	if (res != TEE_SUCCESS)
-		goto exit;
-	TEE_DigestUpdate(hash_op, msg, msg_len);
-	res = TEE_DigestDoFinal(hash_op, NULL, 0, digest, &digest_len);
-	if (res != TEE_SUCCESS)
-		goto exit;
+  
+  /* Compute SHA digest */
+  DMSG("Prepare SHA digest");
+  res = TEE_AllocateOperation(&hash_op, hash_alg, TEE_MODE_DIGEST, 0);
+  if (res != TEE_SUCCESS)
+    goto exit;
+  TEE_DigestUpdate(hash_op, msg, msg_len);
+  res = TEE_DigestDoFinal(hash_op, NULL, 0, digest, &digest_len);
+  if (res != TEE_SUCCESS)
+    goto exit;
 
 	/* Sign the digest */
 	DMSG("Signature on SHA digest");
