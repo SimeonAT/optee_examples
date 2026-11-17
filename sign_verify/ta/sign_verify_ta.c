@@ -14,6 +14,11 @@ struct rsa_session {
 	TEE_ObjectHandle public_key;
 };
 
+struct ed25519_session {
+	TEE_ObjectHandle keypair;
+	TEE_ObjectHandle public_key;
+};
+
 TEE_Result TA_CreateEntryPoint(void)
 {
 	return TEE_SUCCESS;
@@ -146,7 +151,7 @@ static uint32_t get_hash_alg_from_sig_alg(uint32_t sig_alg)
 static TEE_Result sign_verify_ed25519(uint32_t param_types, TEE_Param params[4],
                                       void *session_context)
 {
-  DMSG("Using ED25519 for signing and verification.");
+  struct ed25519_session *sess = (struct ed25519_session *)session_context;
   return TEE_SUCCESS;
 }
 
