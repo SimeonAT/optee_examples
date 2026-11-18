@@ -23,6 +23,7 @@ HACL_LIB     = $(HACL_GCC)/libevercrypt.a
 CFLAGS += -Wall -I../ta/include -I$(TEEC_EXPORT)/include -I./include
 CFLAGS += -I$(HACL_GCC) -I$(HACL_DIST)/karamel/include \
           -I$(HACL_DIST)/karamel/krmllib/dist/minimal
+
 #Add/link other required libraries here
 LDADD += $(HACL_LIB) -lteec -L$(TEEC_EXPORT)/lib
 
@@ -36,6 +37,7 @@ $(BINARY): $(OBJS) $(HACL_LIB)
 
 # HACL*'s Makefile runs its native ./configure if Makefile.config is missing,
 # so put the ARM configs in place first, then build only the static library.
+#
 $(HACL_GCC)/Makefile.config: $(HACL_CONFIGS)/Makefile.config
 	cp $< $@
 $(HACL_GCC)/config.h: $(HACL_CONFIGS)/config.h
@@ -43,6 +45,7 @@ $(HACL_GCC)/config.h: $(HACL_CONFIGS)/config.h
 
 # env -u MAKEFLAGS: the parent passes --no-builtin-variables, which breaks
 # HACL*'s Makefile (it relies on make's built-in compile rule).
+#
 $(HACL_LIB): $(HACL_GCC)/Makefile.config $(HACL_GCC)/config.h
 	env -u MAKEFLAGS -u MFLAGS $(MAKE) -j8 -C $(HACL_GCC) CC="$(CC)" AR="$(AR)" libevercrypt.a
 
