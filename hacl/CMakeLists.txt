@@ -1,4 +1,4 @@
-project (optee_example_hello_world C)
+project (optee_example_hacl_ed25519 C)
 
 set (SRC host/main.c)
 
