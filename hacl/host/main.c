@@ -111,16 +111,25 @@ void optee_example()
   return;
 }
 
+void hexdump(uint8_t *buffer, size_t size)
+{
+  for (size_t i = 0; i < size; i++) {
+    printf("0x%x ", buffer[i]);
+  }
+  printf("\n");
+  return;
+}
+
 int main(void)
 {
   // optee_example();
   uint8_t private_key[ED_25519_PRIVATE_KEY_LENGTH];
   ClearBufMem(&private_key, ED_25519_PRIVATE_KEY_LENGTH);
-  printf("Private Key at Index 10: %"PRIu8 "\n", private_key[10]);
+  hexdump(private_key, ED_25519_PRIVATE_KEY_LENGTH);
 
   // Deprecated.
   Lib_RandomBuffer_System_randombytes((uint8_t *) &private_key, sizeof(private_key));
 
-  printf("Private Key at Index 10: %"PRIu8 "\n", private_key[10]);
+  hexdump(private_key, ED_25519_PRIVATE_KEY_LENGTH);
 	return 0;
 }
