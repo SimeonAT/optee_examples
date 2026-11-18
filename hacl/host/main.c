@@ -39,6 +39,7 @@
 #include <hello_world_ta.h>
 
 #define ED_25519_PRIVATE_KEY_LENGTH 32
+#define ED_25519_PUBLIC_KEY_LENGTH 32
 
 #define ClearBufMem(buffer, size) memset(buffer, 0, size)
 
@@ -122,14 +123,17 @@ void hexdump(uint8_t *buffer, size_t size)
 
 int main(void)
 {
-  // optee_example();
+  // Random Number Generation (Deprecated) for Private Key
   uint8_t private_key[ED_25519_PRIVATE_KEY_LENGTH];
-  ClearBufMem(&private_key, ED_25519_PRIVATE_KEY_LENGTH);
-  hexdump(private_key, ED_25519_PRIVATE_KEY_LENGTH);
+  ClearBufMem(private_key, sizeof(private_key));
+  Lib_RandomBuffer_System_randombytes(private_key, sizeof(private_key));
 
-  // Deprecated.
-  Lib_RandomBuffer_System_randombytes((uint8_t *) &private_key, sizeof(private_key));
+  // Public Key Generation
+  uint8_t public_key[ED_25519_PUBLIC_KEY_LENGTH];
+  ClearBufMem(public_key, sizeof(public_key));
+  Hacl_Ed25519_secret_to_public(public_key, private_key);
 
-  hexdump(private_key, ED_25519_PRIVATE_KEY_LENGTH);
+  printf("--- Public Key ---\n");
+  hexdump(public_key, sizeof(public_key));
 	return 0;
 }
