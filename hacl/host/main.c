@@ -29,11 +29,18 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <Hacl_Ed25519.h>
+#include <Lib_RandomBuffer_System.h>
+
 /* OP-TEE TEE client API (built by optee_client) */
 #include <tee_client_api.h>
 
 /* For the UUID (found in the TA's h-file(s)) */
 #include <hello_world_ta.h>
+
+#define ED_25519_PRIVATE_KEY_LENGTH 32
+
+#define ClearBufMem(buffer, size) memset(buffer, 0, size)
 
 void optee_example() 
 {
@@ -106,6 +113,14 @@ void optee_example()
 
 int main(void)
 {
-  optee_example();
+  // optee_example();
+  uint8_t private_key[ED_25519_PRIVATE_KEY_LENGTH];
+  ClearBufMem(&private_key, ED_25519_PRIVATE_KEY_LENGTH);
+  printf("Private Key at Index 10: %"PRIu8 "\n", private_key[10]);
+
+  // Deprecated.
+  Lib_RandomBuffer_System_randombytes((uint8_t *) &private_key, sizeof(private_key));
+
+  printf("Private Key at Index 10: %"PRIu8 "\n", private_key[10]);
 	return 0;
 }
