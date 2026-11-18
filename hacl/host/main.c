@@ -35,7 +35,7 @@
 /* For the UUID (found in the TA's h-file(s)) */
 #include <hello_world_ta.h>
 
-int main(void)
+void optee_example() 
 {
 	TEEC_Result res;
 	TEEC_Context ctx;
@@ -101,6 +101,11 @@ int main(void)
 	TEEC_CloseSession(&sess);
 
 	TEEC_FinalizeContext(&ctx);
+  return;
+}
 
+int main(void)
+{
+  optee_example();
 	return 0;
 }
