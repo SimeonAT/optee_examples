@@ -41,11 +41,11 @@
 
 void hexdump(uint8_t *buffer, size_t size, char* print_string)
 {
-  DMSG("%s\n", print_string);
+  IMSG("%s\n", print_string);
   for (size_t i = 0; i < size; i++) {
     printf("0x%x ", buffer[i]);
   }
-  DMSG("\n\n");
+  IMSG("\n\n");
   return;
 }
 
@@ -88,7 +88,7 @@ void ed25519_example()
 TEE_Result TA_CreateEntryPoint(void)
 {
 	DMSG("has been called");
-
+  ed25519_example();
 	return TEE_SUCCESS;
 }
 
