@@ -32,10 +32,7 @@
 #include <Lib_RandomBuffer_System.h>
 
 #include <hello_world_ta.h>
-
-#define ED_25519_PRIVATE_KEY_LENGTH 32
-#define ED_25519_PUBLIC_KEY_LENGTH 32
-#define ED_25519_SIGNATURE_LENGTH 64
+#include <common.h>
 
 #define ClearBufMem(buffer, size) memset(buffer, 0, size)
 

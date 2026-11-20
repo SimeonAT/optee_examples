@@ -38,11 +38,7 @@
 /* For the UUID (found in the TA's h-file(s)) */
 #include <hello_world_ta.h>
 
-#define ED_25519_PRIVATE_KEY_LENGTH 32
-#define ED_25519_PUBLIC_KEY_LENGTH 32
-#define ED_25519_SIGNATURE_LENGTH 64
-
-#define ClearBufMem(buffer, size) memset(buffer, 0, size)
+#include <common.h>
 
 void optee_example() 
 {
@@ -110,48 +106,6 @@ void optee_example()
 	TEEC_CloseSession(&sess);
 
 	TEEC_FinalizeContext(&ctx);
-  return;
-}
-
-void hexdump(uint8_t *buffer, size_t size, char* print_string)
-{
-  printf("%s\n", print_string);
-  for (size_t i = 0; i < size; i++) {
-    printf("0x%x ", buffer[i]);
-  }
-  printf("\n\n");
-  return;
-}
-
-void ed25519_example()
-{
-  // TODO: Use HKDF to create the Private Key.
-  uint8_t private_key[ED_25519_PRIVATE_KEY_LENGTH];
-  ClearBufMem(private_key, sizeof(private_key));
-  Lib_RandomBuffer_System_randombytes(private_key, sizeof(private_key));
-
-  // Public Key Generation
-  uint8_t public_key[ED_25519_PUBLIC_KEY_LENGTH];
-  ClearBufMem(public_key, sizeof(public_key));
-  Hacl_Ed25519_secret_to_public(public_key, private_key);
-
-  uint8_t signature[ED_25519_SIGNATURE_LENGTH];
-  ClearBufMem(signature, sizeof(signature));
-  char* message = "Hello World!";
-
-  // Signing
-  Hacl_Ed25519_sign(signature, private_key, sizeof(message), (uint8_t *) message);
-  hexdump(signature, sizeof(signature), "--- Signature ---");
-
-  // Verification
-  bool valid = Hacl_Ed25519_verify(public_key, sizeof(message), (uint8_t *) message, signature);
-  if (valid) {
-    printf("The signature is valid!\n");
-  }
-  else {
-    printf("The signature is NOT valid.\n");
-  }
-
   return;
 }
 

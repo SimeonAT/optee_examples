@@ -20,7 +20,7 @@ HACL_GCC     = $(HACL_DIST)/gcc-compatible
 HACL_CONFIGS = ../../hacl-star-configs-arm
 HACL_LIB     = $(HACL_GCC)/libevercrypt.a
 
-CFLAGS += -Wall -I../ta/include -I$(TEEC_EXPORT)/include -I./include
+CFLAGS += -Wall -I../ta/include -I../common -I$(TEEC_EXPORT)/include -I./include
 CFLAGS += -I$(HACL_GCC) -I$(HACL_DIST)/karamel/include \
           -I$(HACL_DIST)/karamel/krmllib/dist/minimal
 
