@@ -1,16 +1,16 @@
 /*
  * Written by Claude (Claude Sonnet 5.5, Anthropic).
- * Compiled for aarch64 with OP-TEE 4.2.0 TA dev kit [4].
+ * Compiled for aarch64 with OP-TEE 4.2.0 TA dev kit.
  *
  * WHAT: overrides three libc calls that KaRaMeL makes in its error paths,
- *       using the KRML_HOST_* hooks documented in target.h [3].
+ *       using the KRML_HOST_* hooks documented in target.h.
  * WHY:  a TA has no stdio, exit() or time(), so the build fails with
  *       "implicit declaration of function 'time' / 'exit' / 'fprintf'".
  * HOW:  force-included into every file by `cflags-y += -include ...` in
  *       sub.mk, so these macros exist BEFORE target.h is read (target.h only
  *       defines its defaults when the macro is not already defined).
- *   printf/eprintf -> IMSG/EMSG: OP-TEE TA logging to the secure console [4].
- *   exit(code)     -> TEE_Panic(code): kills this TA instance [6]. KaRaMeL
+ *   printf/eprintf -> IMSG/EMSG: OP-TEE TA logging to the secure console.
+ *   exit(code)     -> TEE_Panic(code): kills this TA instance. KaRaMeL
  *                     only exits on "impossible" cases, so panicking fits.
  *   time()         -> constant 0: the algorithms we compile never call it.
  * DEBUG: a secure-log line "KaRaMeL incomplete match at <file>:<line>"

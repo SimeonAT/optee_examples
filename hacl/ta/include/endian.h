@@ -4,12 +4,12 @@
  *
  * WHAT: a minimal <endian.h> for an OP-TEE Trusted Application.
  * WHY:  KaRaMeL's lowstar_endianness.h does `#include <endian.h>` whenever
- *       __linux__ is defined [3]. The TA's C library has no <endian.h>, so
+ *       __linux__ is defined. The TA's C library has no <endian.h>, so
  *       the build stops with "fatal error: endian.h: No such file".
  * HOW:  defines the 12 conversion macros KaRaMeL expects. "to little-endian"
  *       is the identity (aarch64 is little-endian here); "to big-endian" is a
  *       byte swap via the GCC builtins. This mirrors the GCC branch of
- *       KaRaMeL's own fallback in lowstar_endianness.h [3].
+ *       KaRaMeL's own fallback in lowstar_endianness.h.
  * DEBUG: if you see "assumes a little-endian target", you are not compiling
  *        for little-endian aarch64; this shim is then WRONG, do not remove
  *        the #error.
