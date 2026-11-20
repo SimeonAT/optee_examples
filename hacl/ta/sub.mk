@@ -6,9 +6,9 @@
 # WHY:  the TA build only sees the files and include paths listed here.
 # DEBUG: "undefined reference to Hacl_Xxx_..." at link time means add
 #        Hacl_Xxx to HACL_SRCS below.
-#
 
-global-incdirs-y += include        # our own headers: endian.h, compat, TA .h
+# our own headers: endian.h, compat, TA .h
+global-incdirs-y += include
 
 # Force-include the KaRaMeL overrides (Step 2) into EVERY file.
 cflags-y += -include overrides.h
@@ -17,9 +17,13 @@ cflags-y += -include overrides.h
 # from any directory. MAKEFILE_LIST is valid because OP-TEE's mk/subdir.mk
 # `include`s this file.
 #
+# WARNING: never put a trailing comment after a `:=` value. Make keeps the
+# spaces before the #, so "dir   /file.c" splits in two and the build fails
+# with "Don't know what to do with <dir>". HACL_GCC = HACL* generated C [2].
+#
 HACL_TA_DIR  := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 HACL_DIST    := $(abspath $(HACL_TA_DIR)../../hacl-star/dist)
-HACL_GCC     := $(HACL_DIST)/gcc-compatible    # HACL* generated C [2]
+HACL_GCC     := $(HACL_DIST)/gcc-compatible
 HACL_CONFIGS := $(abspath $(HACL_TA_DIR)../../hacl-star-configs-arm)
 
 # incdirs_ext-y is used as written; global-incdirs-y would prepend this
