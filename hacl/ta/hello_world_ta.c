@@ -41,7 +41,6 @@ void ed25519_example()
   ClearBufMem(private_key, sizeof(private_key));
   Lib_RandomBuffer_System_randombytes(private_key, sizeof(private_key));
 
-  // Public Key Generation
   uint8_t public_key[ED_25519_PUBLIC_KEY_LENGTH];
   ClearBufMem(public_key, sizeof(public_key));
   Hacl_Ed25519_secret_to_public(public_key, private_key);
@@ -50,11 +49,9 @@ void ed25519_example()
   ClearBufMem(signature, sizeof(signature));
   char* message = "Hello World!";
 
-  // Signing
   Hacl_Ed25519_sign(signature, private_key, sizeof(message), (uint8_t *) message);
   hexdump(signature, sizeof(signature), "--- Signature ---");
 
-  // Verification
   bool valid = Hacl_Ed25519_verify(public_key, sizeof(message), (uint8_t *) message, signature);
   if (valid) {
     printf("The signature is valid!\n");
@@ -73,7 +70,6 @@ void ed25519_example()
 TEE_Result TA_CreateEntryPoint(void)
 {
 	DMSG("has been called");
-  ed25519_example();
 	return TEE_SUCCESS;
 }
 
@@ -110,13 +106,7 @@ TEE_Result TA_OpenSessionEntryPoint(uint32_t param_types,
 	(void)&params;
 	(void)&sess_ctx;
 
-	/*
-	 * The DMSG() macro is non-standard, TEE Internal API doesn't
-	 * specify any means to logging from a TA.
-	 */
 	IMSG("Hello World!\n");
-
-	/* If return value != TEE_SUCCESS the session will not be created. */
 	return TEE_SUCCESS;
 }
 
@@ -126,7 +116,7 @@ TEE_Result TA_OpenSessionEntryPoint(uint32_t param_types,
  */
 void TA_CloseSessionEntryPoint(void __maybe_unused *sess_ctx)
 {
-	(void)&sess_ctx; /* Unused parameter */
+	(void)&sess_ctx;
 	IMSG("Goodbye!\n");
 }
 
