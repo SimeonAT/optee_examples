@@ -43,6 +43,7 @@ incdirs_ext-y += ../common
 
 srcs-y += hello_world_ta.c
 srcs-y += random_bytes.c
+srcs-y += ../common/common.c
 
 # Only the HACL* files Ed25519 needs (found by fixing link errors one by one):
 #   Hacl_Ed25519        the signature scheme itself

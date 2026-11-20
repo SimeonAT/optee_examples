@@ -34,18 +34,6 @@
 #include <hello_world_ta.h>
 #include <common.h>
 
-#define ClearBufMem(buffer, size) memset(buffer, 0, size)
-
-void hexdump(uint8_t *buffer, size_t size, char* print_string)
-{
-  IMSG("%s\n", print_string);
-  for (size_t i = 0; i < size; i++) {
-    printf("0x%x ", buffer[i]);
-  }
-  IMSG("\n\n");
-  return;
-}
-
 void ed25519_example()
 {
   // TODO: Use HKDF to create the Private Key.

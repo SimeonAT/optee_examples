@@ -40,6 +40,8 @@
 
 #include <common.h>
 
+#define IS_TRUSTED_APPLICATION 0
+
 void optee_example() 
 {
 	TEEC_Result res;

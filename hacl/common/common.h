@@ -8,3 +8,5 @@
 #define ED_25519_SIGNATURE_LENGTH 64
 
 #define ClearBufMem(buffer, size) memset(buffer, 0, size)
+
+void hexdump(uint8_t *buffer, size_t size, char* print_string);
