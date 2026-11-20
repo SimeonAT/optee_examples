@@ -123,7 +123,7 @@ void hexdump(uint8_t *buffer, size_t size, char* print_string)
   return;
 }
 
-int main(void)
+void ed25519_example()
 {
   // TODO: Use HKDF to create the Private Key.
   uint8_t private_key[ED_25519_PRIVATE_KEY_LENGTH];
@@ -152,5 +152,11 @@ int main(void)
     printf("The signature is NOT valid.\n");
   }
 
+  return;
+}
+
+int main(void)
+{
+  ed25519_example();
 	return 0;
 }
