@@ -157,6 +157,6 @@ void ed25519_example()
 
 int main(void)
 {
-  ed25519_example();
+  optee_example();
 	return 0;
 }

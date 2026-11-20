@@ -39,6 +39,7 @@ incdirs_ext-y += $(HACL_DIST)/karamel/krmllib/dist/minimal
 incdirs_ext-y += $(HACL_CONFIGS)
 
 srcs-y += hello_world_ta.c
+srcs-y += random_bytes.c
 
 # Only the HACL* files Ed25519 needs (found by fixing link errors one by one):
 #   Hacl_Ed25519        the signature scheme itself
