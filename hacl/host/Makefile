@@ -12,7 +12,7 @@ OBJCOPY ?= $(CROSS_COMPILE)objcopy
 OBJDUMP ?= $(CROSS_COMPILE)objdump
 READELF ?= $(CROSS_COMPILE)readelf
 
-OBJS = main.o
+OBJS = main.o common.o
 
 # --- HACL* (built from source for the same target as this binary) ---
 HACL_DIST    = ../../hacl-star/dist
@@ -60,3 +60,6 @@ hacl-clean:
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
+
+common.o: ../common/common.c
+	$(CC) $(CFLAGS) -c ../common/common.c -o common.o
