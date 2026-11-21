@@ -63,17 +63,43 @@ void optee_example()
 
 	memset(&op, 0, sizeof(op));
 
-	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INOUT, TEEC_NONE,
-					 TEEC_NONE, TEEC_NONE);
-	op.params[0].value.a = 42;
+  // TODO: Use HKDF to create the Private Key.
+  uint8_t private_key[ED_25519_PRIVATE_KEY_LENGTH];
+  ClearBufMem(private_key, sizeof(private_key));
+  Lib_RandomBuffer_System_randombytes(private_key, sizeof(private_key));
 
-	printf("Invoking TA to increment %d\n", op.params[0].value.a);
+  uint8_t public_key[ED_25519_PUBLIC_KEY_LENGTH];
+  ClearBufMem(public_key, sizeof(public_key));
+  Hacl_Ed25519_secret_to_public(public_key, private_key);
+
+  uint8_t signature[ED_25519_SIGNATURE_LENGTH];
+  ClearBufMem(signature, sizeof(signature));
+  char* message = "Hello World!";
+
+  Hacl_Ed25519_sign(signature, private_key, sizeof(message), (uint8_t *) message);
+  hexdump(signature, sizeof(signature), "--- Signature ---");
+
+	op.paramTypes = TEEC_PARAM_TYPES(
+    TEEC_MEMREF_TEMP_INPUT,
+    TEEC_MEMREF_TEMP_INPUT,
+		TEEC_MEMREF_TEMP_INPUT,
+    TEEC_NONE
+  );
+
+  op.params[0].tmpref.buffer = (void *) public_key;
+  op.params[0].tmpref.size = ED_25519_PUBLIC_KEY_LENGTH;
+
+  op.params[1].tmpref.buffer = (void *) message;
+  op.params[1].tmpref.size = sizeof(message);
+
+  op.params[2].tmpref.buffer = (void *) signature;
+  op.params[2].tmpref.size = sizeof(signature);
+
 	res = TEEC_InvokeCommand(&sess, TA_HELLO_WORLD_CMD_INC_VALUE, &op,
 				 &err_origin);
 	if (res != TEEC_SUCCESS)
 		errx(1, "TEEC_InvokeCommand failed with code 0x%x origin 0x%x",
 			res, err_origin);
-	printf("TA incremented value to %d\n", op.params[0].value.a);
 
 	TEEC_CloseSession(&sess);
 

@@ -161,9 +161,9 @@ static TEE_Result dec_value(uint32_t param_types, TEE_Param params[4])
 static TEE_Result verify(uint32_t param_types, TEE_Param params[4])
 {
 	uint32_t exp_param_types = TEE_PARAM_TYPES(
-    TEE_PARAM_TYPE_VALUE_INOUT,   // public key
-    TEE_PARAM_TYPE_VALUE_INOUT,   // message
-    TEE_PARAM_TYPE_VALUE_INOUT,   // signature
+    TEE_PARAM_TYPE_MEMREF_INOUT,   // public key
+    TEE_PARAM_TYPE_MEMREF_INOUT,   // message
+    TEE_PARAM_TYPE_MEMREF_INOUT,   // signature
     TEE_PARAM_TYPE_NONE
   );
   if (param_types != exp_param_types) { return TEE_ERROR_BAD_PARAMETERS; }
