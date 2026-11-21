@@ -120,8 +120,7 @@ void TA_CloseSessionEntryPoint(void __maybe_unused *sess_ctx)
 	IMSG("Goodbye!\n");
 }
 
-static TEE_Result inc_value(uint32_t param_types,
-	TEE_Param params[4])
+static TEE_Result inc_value(uint32_t param_types, TEE_Param params[4])
 {
 	uint32_t exp_param_types = TEE_PARAM_TYPES(TEE_PARAM_TYPE_VALUE_INOUT,
 						   TEE_PARAM_TYPE_NONE,
@@ -140,8 +139,7 @@ static TEE_Result inc_value(uint32_t param_types,
 	return TEE_SUCCESS;
 }
 
-static TEE_Result dec_value(uint32_t param_types,
-	TEE_Param params[4])
+static TEE_Result dec_value(uint32_t param_types, TEE_Param params[4])
 {
 	uint32_t exp_param_types = TEE_PARAM_TYPES(TEE_PARAM_TYPE_VALUE_INOUT,
 						   TEE_PARAM_TYPE_NONE,
@@ -159,6 +157,34 @@ static TEE_Result dec_value(uint32_t param_types,
 
 	return TEE_SUCCESS;
 }
+
+static TEE_Result verify(uint32_t param_types, TEE_Param params[4])
+{
+	uint32_t exp_param_types = TEE_PARAM_TYPES(
+    TEE_PARAM_TYPE_VALUE_INOUT,   // public key
+    TEE_PARAM_TYPE_VALUE_INOUT,   // message
+    TEE_PARAM_TYPE_VALUE_INOUT,   // signature
+    TEE_PARAM_TYPE_NONE
+  );
+  if (param_types != exp_param_types) { return TEE_ERROR_BAD_PARAMETERS; }
+
+  uint8_t *public_key = (uint8_t *) params[0].memref.buffer;
+
+  uint8_t *message = (uint8_t *) params[1].memref.buffer;
+  uint32_t msg_len = params[1].memref.size;
+
+  uint8_t *signature = (uint8_t *) params[2].memref.buffer;
+
+  bool valid = Hacl_Ed25519_verify(public_key, msg_len, message, signature);
+  if (valid) {
+    printf("The signature is valid!\n");
+  }
+  else {
+    printf("The signature is NOT valid.\n");
+  }
+	return TEE_SUCCESS;
+}
+
 /*
  * Called when a TA is invoked. sess_ctx hold that value that was
  * assigned by TA_OpenSessionEntryPoint(). The rest of the paramters
@@ -168,14 +194,6 @@ TEE_Result TA_InvokeCommandEntryPoint(void __maybe_unused *sess_ctx,
 			uint32_t cmd_id,
 			uint32_t param_types, TEE_Param params[4])
 {
-	(void)&sess_ctx; /* Unused parameter */
-
-	switch (cmd_id) {
-	case TA_HELLO_WORLD_CMD_INC_VALUE:
-		return inc_value(param_types, params);
-	case TA_HELLO_WORLD_CMD_DEC_VALUE:
-		return dec_value(param_types, params);
-	default:
-		return TEE_ERROR_BAD_PARAMETERS;
-	}
+	(void)&sess_ctx;
+	return verify(param_types, params);
 }
