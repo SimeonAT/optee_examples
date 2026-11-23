@@ -1,5 +1,5 @@
-# Written by Claude (Anthropic, Claude Sonnet 5, November 2026) and 
-# modified by repository authors. Compiled for aarch64 with OP-TEE 4.2.0 TA dev kit. 
+# Written by Claude (Anthropic, Claude Sonnet 5, November 2026). 
+# Compiled for aarch64 with OP-TEE 4.2.0 TA dev kit. 
 # Structure follows the Linaro hello_world sub.mk.
 #
 # WHAT: compiles (nearly) ALL of HACL*'s portable C code INTO the TA, so a new
@@ -31,13 +31,6 @@ HACL_TA_DIR  := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 HACL_DIST    := $(abspath $(HACL_TA_DIR)../../hacl-star/dist)
 HACL_GCC     := $(HACL_DIST)/gcc-compatible
 HACL_CONFIGS := $(abspath $(HACL_TA_DIR)../../hacl-star-configs-arm)
-
-# Silence warnings 
-HACL_SOURCE_EXCLUDES = -I$(HACL_GCC) -I$(HACL_DIST)/karamel/include \
-											 -I$(HACL_DIST)/karamel/krmllib/dist/minimal
-cflags-y += -Wno-redundant-decls $(HACL_SOURCE_EXCLUDES) \
-						-Wno-return-type  $(HACL_SOURCE_EXCLUDES) \
-						-Wno-maybe-uninitialized $(HACL_SOURCE_EXCLUDES)
 
 # incdirs_ext-y is used as written; global-incdirs-y would prepend this
 # directory to each entry and mangle absolute paths.
@@ -103,3 +96,12 @@ HACL_EXCLUDE += Hacl_HPKE_Curve64_CP32_SHA256 Hacl_HPKE_Curve64_CP32_SHA512
 HACL_ALL  := $(basename $(notdir $(wildcard $(HACL_GCC)/*.c)))
 HACL_SRCS := $(filter-out $(HACL_EXCLUDE),$(HACL_ALL))
 srcs-y += $(addprefix $(HACL_GCC)/,$(addsuffix .c,$(HACL_SRCS)))
+
+# Treat all HACL* headers as system headers, so Makefile warnings are not displayed about them.
+clags-y += -isystem $(HACL_GCC) -isystem $(HACL_DIST)/karamel/include \
+					 -isystem $(HACL_DIST)/karamel/krmllib/dist/minimal
+cflags-y += -Wno-redundant-decls
+
+# Per-file: only HACL* .c files get these suppressions.
+$(foreach f,$(HACL_SRCS), \
+  $(eval cflags-$(HACL_GCC)/$(f).c-y += -Wno-return-type -Wno-maybe-uninitialized))
