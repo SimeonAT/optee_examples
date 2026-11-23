@@ -34,35 +34,6 @@
 #include <hello_world_ta.h>
 #include <common.h>
 
-void ed25519_example()
-{
-  // TODO: Use HKDF to create the Private Key.
-  uint8_t private_key[ED_25519_PRIVATE_KEY_LENGTH];
-  ClearBufMem(private_key, sizeof(private_key));
-  Lib_RandomBuffer_System_randombytes(private_key, sizeof(private_key));
-
-  uint8_t public_key[ED_25519_PUBLIC_KEY_LENGTH];
-  ClearBufMem(public_key, sizeof(public_key));
-  Hacl_Ed25519_secret_to_public(public_key, private_key);
-
-  uint8_t signature[ED_25519_SIGNATURE_LENGTH];
-  ClearBufMem(signature, sizeof(signature));
-  char* message = "Hello World!";
-
-  Hacl_Ed25519_sign(signature, private_key, sizeof(message), (uint8_t *) message);
-  hexdump(signature, sizeof(signature), "--- Signature ---");
-
-  bool valid = Hacl_Ed25519_verify(public_key, sizeof(message), (uint8_t *) message, signature);
-  if (valid) {
-    printf("The signature is valid!\n");
-  }
-  else {
-    printf("The signature is NOT valid.\n");
-  }
-
-  return;
-}
-
 /*
  * Called when the instance of the TA is created. This is the first call in
  * the TA.
@@ -119,44 +90,6 @@ void TA_CloseSessionEntryPoint(void __maybe_unused *sess_ctx)
   return;
 }
 
-static TEE_Result inc_value(uint32_t param_types, TEE_Param params[4])
-{
-	uint32_t exp_param_types = TEE_PARAM_TYPES(TEE_PARAM_TYPE_VALUE_INOUT,
-						   TEE_PARAM_TYPE_NONE,
-						   TEE_PARAM_TYPE_NONE,
-						   TEE_PARAM_TYPE_NONE);
-
-	DMSG("has been called");
-
-	if (param_types != exp_param_types)
-		return TEE_ERROR_BAD_PARAMETERS;
-
-	IMSG("Got value: %u from NW", params[0].value.a);
-	params[0].value.a++;
-	IMSG("Increase value to: %u", params[0].value.a);
-
-	return TEE_SUCCESS;
-}
-
-static TEE_Result dec_value(uint32_t param_types, TEE_Param params[4])
-{
-	uint32_t exp_param_types = TEE_PARAM_TYPES(TEE_PARAM_TYPE_VALUE_INOUT,
-						   TEE_PARAM_TYPE_NONE,
-						   TEE_PARAM_TYPE_NONE,
-						   TEE_PARAM_TYPE_NONE);
-
-	DMSG("has been called");
-
-	if (param_types != exp_param_types)
-		return TEE_ERROR_BAD_PARAMETERS;
-
-	IMSG("Got value: %u from NW", params[0].value.a);
-	params[0].value.a--;
-	IMSG("Decrease value to: %u", params[0].value.a);
-
-	return TEE_SUCCESS;
-}
-
 static TEE_Result verify(uint32_t param_types, TEE_Param params[4])
 {
 	uint32_t exp_param_types = TEE_PARAM_TYPES(
@@ -196,5 +129,6 @@ TEE_Result TA_InvokeCommandEntryPoint(void __maybe_unused *sess_ctx,
 			uint32_t param_types, TEE_Param params[4])
 {
 	(void)&sess_ctx;
+  (void)&cmd_id;
 	return verify(param_types, params);
 }

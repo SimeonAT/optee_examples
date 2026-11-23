@@ -40,9 +40,7 @@
 
 #include <common.h>
 
-#define IS_TRUSTED_APPLICATION 0
-
-void optee_example() 
+void ed25519_example() 
 {
 	TEEC_Result res;
 	TEEC_Context ctx;
@@ -52,14 +50,14 @@ void optee_example()
 	uint32_t err_origin;
 
 	res = TEEC_InitializeContext(NULL, &ctx);
-	if (res != TEEC_SUCCESS)
-		errx(1, "TEEC_InitializeContext failed with code 0x%x", res);
+	if (res != TEEC_SUCCESS) {
+    errx(1, "TEEC_InitializeContext failed with code 0x%x", res);
+  }
 
-	res = TEEC_OpenSession(&ctx, &sess, &uuid,
-			       TEEC_LOGIN_PUBLIC, NULL, NULL, &err_origin);
-	if (res != TEEC_SUCCESS)
-		errx(1, "TEEC_Opensession failed with code 0x%x origin 0x%x",
-			res, err_origin);
+	res = TEEC_OpenSession(&ctx, &sess, &uuid, TEEC_LOGIN_PUBLIC, NULL, NULL, &err_origin);
+	if (res != TEEC_SUCCESS) {
+    errx(1, "TEEC_Opensession failed with code 0x%x origin 0x%x", res, err_origin);
+  }
 
 	memset(&op, 0, sizeof(op));
 
@@ -95,8 +93,7 @@ void optee_example()
   op.params[2].tmpref.buffer = (void *) signature;
   op.params[2].tmpref.size = sizeof(signature);
 
-	res = TEEC_InvokeCommand(&sess, TA_HELLO_WORLD_CMD_INC_VALUE, &op,
-				 &err_origin);
+	res = TEEC_InvokeCommand(&sess, TA_HELLO_WORLD_CMD_INC_VALUE, &op, &err_origin);
 	if (res != TEEC_SUCCESS)
   {
     errx(1, "TEEC_InvokeCommand failed with code 0x%x origin 0x%x", res, err_origin);
@@ -110,6 +107,6 @@ void optee_example()
 
 int main(void)
 {
-  optee_example();
+  ed25519_example();
 	return 0;
 }
