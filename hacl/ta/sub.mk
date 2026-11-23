@@ -1,11 +1,17 @@
-# Written by Claude (Claude Sonnet 5.5, Anthropic).
+# Written by Claude (Anthropic, Claude Sonnet 5, November 2026).
 # Compiled for aarch64 with OP-TEE 4.2.0 TA dev kit. Structure follows the
 # Linaro hello_world sub.mk.
 #
-# WHAT: compiles HACL*'s Ed25519 code INTO the TA.
+# WHAT: compiles (nearly) ALL of HACL*'s portable C code INTO the TA, so a new
+#       algorithm needs only an #include, not a new line in this file.
 # WHY:  the TA build only sees the files and include paths listed here.
-# DEBUG: "undefined reference to Hacl_Xxx_..." at link time means add
-#        Hacl_Xxx to HACL_SRCS below.
+# DEBUG: "undefined reference to Hacl_Xxx_..." at link time means a file that
+#        provides it is in HACL_EXCLUDE below. Decide whether it is needed
+#        (see the notes on each exclusion) before removing it from the list.
+# CAVEAT: the exclusion list was derived by compiling each HACL* file on an
+#        x86 host with the ARM config.h and checking its undefined symbols.
+#        It was NOT built with the OP-TEE TA toolchain. The real link is the
+#        final check.
 
 # our own headers: endian.h, compat, TA .h
 global-incdirs-y += include
@@ -45,12 +51,48 @@ srcs-y += hacl_example_ta.c
 srcs-y += random_bytes.c
 srcs-y += ../common/common.c
 
-# Only the HACL* files Ed25519 needs (found by fixing link errors one by one):
-#   Hacl_Ed25519        the signature scheme itself
-#   Hacl_Curve25519_51  field arithmetic Ed25519 reuses
-#   Hacl_Hash_SHA2      SHA-512, used inside Ed25519
-#   Lib_Memzero0        secure zeroing of secrets
-# Plain scalar C only (no NEON/Simd128), so no SIMD setup is needed in the TA.
+# ---------------------------------------------------------------------------
+# HACL* sources: every .c in dist/gcc-compatible, minus the exclusions below.
+# Names here are file basenames WITHOUT ".c". `%` is a make wildcard
+# (one per pattern, matches any text).
+# ---------------------------------------------------------------------------
+# Excluded, with reason:
+#   %Simd128 %Simd256 %Vec128 %Vec256
+#       SIMD (NEON/AVX) variants. The TA is scalar C only, so no SIMD setup
+#       is needed. Everything that calls them is excluded below too.
+#   Vale, Hacl_Curve25519_64
+#       Vale/assembly-backed Curve25519; needs symbols (fadd_e, ...) that
+#       the portable build does not provide. Use Hacl_Curve25519_51.
+#   EverCrypt_%
+#       EverCrypt is the CPU-feature-multiplexing layer. Use Hacl_* directly.
+#   Lib_RandomBuffer_System
+#       Reads /dev/urandom; a TA has no such file. Our random_bytes.c defines
+#       Lib_RandomBuffer_System_randombytes instead (duplicate symbol if both
+#       are linked).
+#   Lib_PrintBuffer
+#       Debug printing with stdio, which a TA does not have.
+#   Hacl_HKDF_Blake2b_256 Hacl_HKDF_Blake2s_128
+#   Hacl_HMAC_Blake2b_256 Hacl_HMAC_Blake2s_128
+#       Wrappers over the SIMD Blake2 variants. The scalar Blake2 HKDF/HMAC
+#       lives in Hacl_HKDF / Hacl_HMAC, which stay included.
+#   Hacl_Streaming_HMAC
+#       Depends on the SIMD Blake2 variants.
+#   %_CP128_SHA256 %_CP128_SHA512 %_CP256_SHA256 %_CP256_SHA512
+#       HPKE variants built on SIMD ChaCha20-Poly1305.
+#   Hacl_HPKE_Curve64_CP32_SHA256 Hacl_HPKE_Curve64_CP32_SHA512
+#       HPKE variants built on Hacl_Curve25519_64 (excluded above).
+#       Hacl_HPKE_Curve51_CP32_* stays included.
 #
-HACL_SRCS := Hacl_Ed25519 Hacl_Curve25519_51 Hacl_Hash_SHA2 Lib_Memzero0
+HACL_EXCLUDE := %Simd128 %Simd256 %Vec128 %Vec256
+HACL_EXCLUDE += Vale Hacl_Curve25519_64
+HACL_EXCLUDE += EverCrypt_%
+HACL_EXCLUDE += Lib_RandomBuffer_System Lib_PrintBuffer
+HACL_EXCLUDE += Hacl_HKDF_Blake2b_256 Hacl_HKDF_Blake2s_128
+HACL_EXCLUDE += Hacl_HMAC_Blake2b_256 Hacl_HMAC_Blake2s_128
+HACL_EXCLUDE += Hacl_Streaming_HMAC
+HACL_EXCLUDE += %_CP128_SHA256 %_CP128_SHA512 %_CP256_SHA256 %_CP256_SHA512
+HACL_EXCLUDE += Hacl_HPKE_Curve64_CP32_SHA256 Hacl_HPKE_Curve64_CP32_SHA512
+
+HACL_ALL  := $(basename $(notdir $(wildcard $(HACL_GCC)/*.c)))
+HACL_SRCS := $(filter-out $(HACL_EXCLUDE),$(HACL_ALL))
 srcs-y += $(addprefix $(HACL_GCC)/,$(addsuffix .c,$(HACL_SRCS)))
