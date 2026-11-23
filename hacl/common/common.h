@@ -9,4 +9,4 @@
 
 #define ClearBufMem(buffer, size) memset(buffer, 0, size)
 
-void hexdump(uint8_t *buffer, size_t size, char* print_string);
+void hexdump(uint8_t *buffer, size_t size, const char* print_string);
