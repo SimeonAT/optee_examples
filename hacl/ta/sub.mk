@@ -41,7 +41,7 @@ incdirs_ext-y += $(HACL_CONFIGS)
 # Include header file with common utilities used by both the TA and the Host.
 incdirs_ext-y += ../common
 
-srcs-y += hello_world_ta.c
+srcs-y += hacl_example_ta.c
 srcs-y += random_bytes.c
 srcs-y += ../common/common.c
 
