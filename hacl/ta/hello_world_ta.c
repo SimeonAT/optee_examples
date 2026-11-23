@@ -69,7 +69,7 @@ void ed25519_example()
  */
 TEE_Result TA_CreateEntryPoint(void)
 {
-	DMSG("has been called");
+	DMSG("Created TA Entry Point.\n");
 	return TEE_SUCCESS;
 }
 
@@ -79,7 +79,7 @@ TEE_Result TA_CreateEntryPoint(void)
  */
 void TA_DestroyEntryPoint(void)
 {
-	DMSG("has been called");
+	DMSG("Destroyed TA Entry Point.\n");
 }
 
 /*
@@ -106,7 +106,6 @@ TEE_Result TA_OpenSessionEntryPoint(uint32_t param_types,
 	(void)&params;
 	(void)&sess_ctx;
 
-	IMSG("Hello World!\n");
 	return TEE_SUCCESS;
 }
 
@@ -117,7 +116,7 @@ TEE_Result TA_OpenSessionEntryPoint(uint32_t param_types,
 void TA_CloseSessionEntryPoint(void __maybe_unused *sess_ctx)
 {
 	(void)&sess_ctx;
-	IMSG("Goodbye!\n");
+  return;
 }
 
 static TEE_Result inc_value(uint32_t param_types, TEE_Param params[4])
@@ -161,9 +160,9 @@ static TEE_Result dec_value(uint32_t param_types, TEE_Param params[4])
 static TEE_Result verify(uint32_t param_types, TEE_Param params[4])
 {
 	uint32_t exp_param_types = TEE_PARAM_TYPES(
-    TEE_PARAM_TYPE_MEMREF_INOUT,   // public key
-    TEE_PARAM_TYPE_MEMREF_INOUT,   // message
-    TEE_PARAM_TYPE_MEMREF_INOUT,   // signature
+    TEE_PARAM_TYPE_MEMREF_INPUT,   // public key
+    TEE_PARAM_TYPE_MEMREF_INPUT,   // message
+    TEE_PARAM_TYPE_MEMREF_INPUT,   // signature
     TEE_PARAM_TYPE_NONE
   );
   if (param_types != exp_param_types) { return TEE_ERROR_BAD_PARAMETERS; }
@@ -174,6 +173,8 @@ static TEE_Result verify(uint32_t param_types, TEE_Param params[4])
   uint32_t msg_len = params[1].memref.size;
 
   uint8_t *signature = (uint8_t *) params[2].memref.buffer;
+
+  hexdump(signature, params[2].memref.size, "--- Signature --- ");
 
   bool valid = Hacl_Ed25519_verify(public_key, msg_len, message, signature);
   if (valid) {
