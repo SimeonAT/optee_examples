@@ -36,7 +36,7 @@
 #include <tee_client_api.h>
 
 /* For the UUID (found in the TA's h-file(s)) */
-#include <hello_world_ta.h>
+#include <hacl_ta.h>
 
 #include <common.h>
 

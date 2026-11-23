@@ -33,7 +33,7 @@
 #define USER_TA_HEADER_DEFINES_H
 
 /* To get the TA UUID definition */
-#include <hello_world_ta.h>
+#include <hacl_ta.h>
 
 #define TA_UUID				TA_HELLO_WORLD_UUID
 

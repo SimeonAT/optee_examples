@@ -31,7 +31,7 @@
 #include <Hacl_Ed25519.h>
 #include <Lib_RandomBuffer_System.h>
 
-#include <hello_world_ta.h>
+#include <hacl_ta.h>
 #include <common.h>
 
 /*
@@ -51,6 +51,7 @@ TEE_Result TA_CreateEntryPoint(void)
 void TA_DestroyEntryPoint(void)
 {
 	DMSG("Destroyed TA Entry Point.\n");
+  return;
 }
 
 /*
@@ -98,7 +99,9 @@ static TEE_Result verify(uint32_t param_types, TEE_Param params[4])
     TEE_PARAM_TYPE_MEMREF_INPUT,   // signature
     TEE_PARAM_TYPE_NONE
   );
-  if (param_types != exp_param_types) { return TEE_ERROR_BAD_PARAMETERS; }
+  if (param_types != exp_param_types) { 
+    return TEE_ERROR_BAD_PARAMETERS;
+  }
 
   uint8_t *public_key = (uint8_t *) params[0].memref.buffer;
 
