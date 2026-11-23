@@ -1,6 +1,6 @@
-# Written by Claude (Anthropic, Claude Sonnet 5, November 2026).
-# Compiled for aarch64 with OP-TEE 4.2.0 TA dev kit. Structure follows the
-# Linaro hello_world sub.mk.
+# Written by Claude (Anthropic, Claude Sonnet 5, November 2026) and 
+# modified by repository authors. Compiled for aarch64 with OP-TEE 4.2.0 TA dev kit. 
+# Structure follows the Linaro hello_world sub.mk.
 #
 # WHAT: compiles (nearly) ALL of HACL*'s portable C code INTO the TA, so a new
 #       algorithm needs only an #include, not a new line in this file.
@@ -31,6 +31,13 @@ HACL_TA_DIR  := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 HACL_DIST    := $(abspath $(HACL_TA_DIR)../../hacl-star/dist)
 HACL_GCC     := $(HACL_DIST)/gcc-compatible
 HACL_CONFIGS := $(abspath $(HACL_TA_DIR)../../hacl-star-configs-arm)
+
+# Silence warnings 
+HACL_SOURCE_EXCLUDES = -I$(HACL_GCC) -I$(HACL_DIST)/karamel/include \
+											 -I$(HACL_DIST)/karamel/krmllib/dist/minimal
+cflags-y += -Wno-redundant-decls $(HACL_SOURCE_EXCLUDES) \
+						-Wno-return-type  $(HACL_SOURCE_EXCLUDES) \
+						-Wno-maybe-uninitialized $(HACL_SOURCE_EXCLUDES)
 
 # incdirs_ext-y is used as written; global-incdirs-y would prepend this
 # directory to each entry and mangle absolute paths.
