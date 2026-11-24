@@ -62,7 +62,6 @@ void ed25519_example()
 
 	memset(&op, 0, sizeof(op));
 
-  // TODO: Use HKDF to create the Private Key.
   uint8_t private_key[ED_25519_PRIVATE_KEY_LENGTH];
   ClearBufMem(private_key, sizeof(private_key));
   // Lib_RandomBuffer_System_randombytes(private_key, sizeof(private_key));
