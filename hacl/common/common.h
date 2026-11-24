@@ -7,6 +7,8 @@
 #define ED_25519_PUBLIC_KEY_LENGTH 32
 #define ED_25519_SIGNATURE_LENGTH 64
 
+#define SHA2_256_HASH_LENGTH 256
+
 #define ClearBufMem(buffer, size) memset(buffer, 0, size)
 
 void hexdump(uint8_t *buffer, size_t size, const char* print_string);

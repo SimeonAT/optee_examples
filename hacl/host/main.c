@@ -30,6 +30,7 @@
 #include <string.h>
 
 #include <Hacl_Ed25519.h>
+#include <Hacl_HKDF.h>
 #include <Lib_RandomBuffer_System.h>
 
 /* OP-TEE TEE client API (built by optee_client) */
@@ -64,7 +65,21 @@ void ed25519_example()
   // TODO: Use HKDF to create the Private Key.
   uint8_t private_key[ED_25519_PRIVATE_KEY_LENGTH];
   ClearBufMem(private_key, sizeof(private_key));
-  Lib_RandomBuffer_System_randombytes(private_key, sizeof(private_key));
+  // Lib_RandomBuffer_System_randombytes(private_key, sizeof(private_key));
+
+  char *salt = "This is a test salt!";
+  char *ikm = "This a test input key material!";
+  char *ad = "This is test associated data!";
+
+  uint8_t prk[SHA2_256_HASH_LENGTH];
+  ClearBufMem(prk, sizeof(prk));
+
+  Hacl_HKDF_extract_sha2_256(prk, (uint8_t *) salt, sizeof(salt), 
+                             (uint8_t *) ikm, sizeof(ikm));
+  Hacl_HKDF_expand_sha2_256(private_key, prk, sizeof(prk), (uint8_t *) ad, sizeof(ad),
+                            ED_25519_PRIVATE_KEY_LENGTH);
+  
+  hexdump(private_key, sizeof(private_key), " --- Private Key ---");
 
   uint8_t public_key[ED_25519_PUBLIC_KEY_LENGTH];
   ClearBufMem(public_key, sizeof(public_key));
